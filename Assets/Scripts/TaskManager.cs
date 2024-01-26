@@ -60,18 +60,35 @@ public class TaskManager : MonoBehaviour
         return objectsToSelect[currentTaskIndex];
     }
 
-    public void OnSelectionEvent(GameObject selectedObject)
+    public void OnSelectionEvent(GameObject selectedObject, int action)
     {
-        SelectableObject selectedObjectScript = selectedObject.GetComponent<SelectableObject>();
-        SelectableObject objectToSelectScript = objectsToSelect[currentTaskIndex].GetComponent<SelectableObject>();
-        if (selectedObjectScript == null || selectedObjectScript.GetObjectName() != objectToSelectScript.GetObjectName())
+        Vector3 pos;
+        switch (action)
         {
-            HandleSelectionError();
-        }
-        else
-        {
-            objectToSelectScript.SetAsSuccess();
-            BeginNextSelectionTask();
+            case 0: // remove object
+                pos = selectedObject.transform.position;
+                pos.y += 10;
+                selectedObject.transform.position = pos;
+                break;
+            case 1: // put back object
+                pos = selectedObject.transform.position;
+                pos.y -= 10;
+                selectedObject.transform.position = pos;
+                break;
+            case 2: // select object
+            default:
+                SelectableObject selectedObjectScript = selectedObject.GetComponent<SelectableObject>();
+                SelectableObject objectToSelectScript = objectsToSelect[currentTaskIndex].GetComponent<SelectableObject>();
+                if (selectedObjectScript == null || selectedObjectScript.GetObjectName() != objectToSelectScript.GetObjectName())
+                {
+                    HandleSelectionError();
+                }
+                else
+                {
+                    objectToSelectScript.SetAsSuccess();
+                    BeginNextSelectionTask();
+                }
+                break;
         }
     }
 
@@ -108,7 +125,7 @@ public class TaskManager : MonoBehaviour
     {
         string fileName = userId + "_" + interactionType.ToString() + ".csv";
         string logLines = "userId,interactionType,objectName,startTimestamp,endTimestamp,errorCount\n";
-        foreach(TaskLog taskLog in taskLogs)
+        foreach (TaskLog taskLog in taskLogs)
         {
             logLines += userId + "," + interactionType + "," + taskLog.GetObjectName() + "," + taskLog.GetStartTimestamp() + "," + taskLog.GetEndTimestamp() + "," + taskLog.GetErrorCount() + "\n";
         }

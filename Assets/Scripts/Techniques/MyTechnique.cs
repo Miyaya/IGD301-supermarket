@@ -10,9 +10,13 @@ public class MyTechnique : InteractionTechnique
 
     [SerializeField]
     private OVRHand rightHand;
+    [SerializeField]
+    private OVRHand leftHand;
 
     private LineRenderer lineRenderer;
-    private bool isIndexFingerPinching;
+    private bool leftPinching;
+    private bool rightIndexPinching;
+    private bool rightMiddlePinching;
     private void Start()
     {
         lineRenderer = rightHand.GetComponent<LineRenderer>();
@@ -21,28 +25,41 @@ public class MyTechnique : InteractionTechnique
     private void FixedUpdate()
     {
         Transform rightHandTransform = rightHand.transform;
-        var pos = rightHandTransform.position;
+        // make the starting point to palm
+        Vector3 offset = rightHandTransform.right;
+        float offsetScale = 0.08f;
+        offset.x *= offsetScale;
+        offset.y *= offsetScale;
+        offset.z *= offsetScale;
+        var pos = rightHandTransform.position - offset;
         lineRenderer.SetPosition(0, pos);
 
-        var left = -rightHandTransform.right; // NOTE: Idk why .forward doesn't really work, instead have to use left
+        var down = -rightHandTransform.up;
         RaycastHit hit;
-        bool hasHit = Physics.Raycast(pos, left, out hit, Mathf.Infinity);
-        isIndexFingerPinching = rightHand.GetFingerIsPinching(OVRHand.HandFinger.Index);
-        // Checking that the user pushed the trigger
-        if (isIndexFingerPinching && hasHit)
-        {
-            // Sending the selected object hit by the raycast
-            currentSelectedObject = hit.collider.gameObject;
-        }
-
-        // Determining the end of the LineRenderer depending on whether we hit an object or not
+        bool hasHit = Physics.Raycast(pos, down, out hit, Mathf.Infinity);
+        leftPinching = leftHand.GetFingerIsPinching(OVRHand.HandFinger.Index);
+        rightIndexPinching = rightHand.GetFingerIsPinching(OVRHand.HandFinger.Index);
+        rightMiddlePinching = rightHand.GetFingerIsPinching(OVRHand.HandFinger.Middle);
         if (hasHit)
         {
+            if (leftPinching)
+            {
+                currentSelectedObject = hit.collider.gameObject;
+            }
+            else if (rightIndexPinching)
+            {
+                removeSelectedObject = hit.collider.gameObject;
+            }
+            else if (rightMiddlePinching)
+            {
+                putbackSelectedObject = hit.collider.gameObject;
+            }
+
             lineRenderer.SetPosition(1, hit.point);
         }
         else
         {
-            lineRenderer.SetPosition(1, raycastMaxDistance * left);
+            lineRenderer.SetPosition(1, raycastMaxDistance * down);
         }
 
 
