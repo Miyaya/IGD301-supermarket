@@ -137,8 +137,8 @@ public class TaskManager : MonoBehaviour
     {
         //** N.B. use .persistentDataPath if running on Quest/device unlinked,
         //**      else use .dataPath if Quest/device is linked/connected to machine via USB.
-        string path = Application.dataPath + "/" + filename;
-        //string path = Application.persistentDataPath + "/" + filename;
+        // string path = Application.dataPath + "/" + filename;
+        string path = Application.persistentDataPath + "/" + filename;
 
         //** Create new file if it doesn't exist, if append to file to avoid overwritting data due to selection error from previous scene.
         if (!File.Exists(path))
