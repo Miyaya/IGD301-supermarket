@@ -67,12 +67,13 @@ public class TaskManager : MonoBehaviour
         {
             case 0: // remove object
                 pos = selectedObject.transform.position;
-                pos.y += 10;
+                pos.y += 3.5f;
                 selectedObject.transform.position = pos;
                 break;
             case 1: // put back object
                 pos = selectedObject.transform.position;
-                pos.y -= 10;
+                if (pos.y > 4)
+                    pos.y -= 3.5f;
                 selectedObject.transform.position = pos;
                 break;
             case 2: // select object

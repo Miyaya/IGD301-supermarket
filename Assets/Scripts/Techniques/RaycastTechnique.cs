@@ -20,7 +20,7 @@ public class RaycastTechnique : InteractionTechnique
     private void FixedUpdate()
     {
         Transform rightControllerTransform = rightController.transform;
-        
+
         // Set the beginning of the line renderer to the position of the controller
         lineRenderer.SetPosition(0, rightControllerTransform.position);
 
@@ -29,7 +29,7 @@ public class RaycastTechnique : InteractionTechnique
         bool hasHit = Physics.Raycast(rightControllerTransform.position, rightControllerTransform.forward, out hit, Mathf.Infinity);
 
         // Checking that the user pushed the trigger
-        if (OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger) > 0.1f && hasHit)
+        if (OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger) > 0.5f && hasHit)
         {
             // Sending the selected object hit by the raycast
             currentSelectedObject = hit.collider.gameObject;
